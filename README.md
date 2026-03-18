@@ -38,7 +38,7 @@ Traditional classifiers:
 * Fail on imbalanced data
 
 👉 This project addresses these issues using **multi-task learning + severity-aware modeling**.
-
+![Introduction](Images/Intro.jpg)
 ---
 
 ## 🏗️ Model Architecture
