@@ -20,7 +20,6 @@ It incorporates **advanced training strategies** such as:
 * **Contrastive learning**
 * Severity-aware training
 
-> ⚠️ Note: This project is intended for **portfolio and engineering demonstration**, not for publication.
 
 ---
 
