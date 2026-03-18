@@ -3,7 +3,7 @@
 
 ---
 
-# 🏙️ Urban Issue Classifier — Severity-Guided Multi-Task NLP Model
+# Urban Issue Classifier — Severity-Guided Multi-Task NLP Model
 
 ## 📌 Overview
 
