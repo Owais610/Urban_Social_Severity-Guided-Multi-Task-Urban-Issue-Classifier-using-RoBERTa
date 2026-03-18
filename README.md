@@ -85,7 +85,7 @@ W_i = sigmoid((E_i · P_s) / τ)
 ```
 α_c ∝ asymptotic_loss × (1 + β·variance)
 ```
-
+![Isotonic Regression Class Reweighting](Images/Iso_Reg_Fit.jpg)
 ---
 
 ### 🔹 2. Severity-Aware Loss Scaling
