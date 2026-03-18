@@ -85,7 +85,321 @@ W_i = sigmoid((E_i · P_s) / τ)
 ```
 α_c ∝ asymptotic_loss × (1 + β·variance)
 ```
+🔍 Isotonic Regression for Dynamic Class Reweighting
+📌 Why Is This Needed?
 
+During training, not all classes behave the same:
+
+Some classes learn quickly (easy classes)
+
+Some classes learn slowly (hard classes)
+
+Some classes are unstable (noisy or inconsistent)
+
+If we treat all classes equally:
+
+Easy classes dominate
+
+Hard classes get underfitted
+
+👉 So instead of static weights, we learn class difficulty dynamically.
+
+🧠 Core Idea
+
+We track how the loss of each class evolves during warm-up training, and estimate:
+
+How hard the class is
+
+How stable the learning is
+
+Then assign weights accordingly.
+
+📈 Step 1 — Build Loss Trajectories
+
+For each class 
+𝑐
+c, we record:
+
+𝑇
+𝑐
+=
+[
+𝐿
+𝑐
+(
+1
+)
+,
+𝐿
+𝑐
+(
+2
+)
+,
+.
+.
+.
+,
+𝐿
+𝑐
+(
+𝐸
+)
+]
+T
+c
+	​
+
+=[L
+c
+(1)
+	​
+
+,L
+c
+(2)
+	​
+
+,...,L
+c
+(E)
+	​
+
+]
+
+Where:
+
+𝐿
+𝑐
+(
+𝑒
+)
+L
+c
+(e)
+	​
+
+ = average loss of class 
+𝑐
+c at epoch 
+𝑒
+e
+
+𝐸
+E = number of warm-up epochs
+
+👉 This gives a loss curve per class
+
+📉 Step 2 — Fit Isotonic Regression
+
+We apply isotonic regression to each class trajectory:
+
+𝐿
+^
+𝑐
+=
+IsotonicFit
+(
+𝑇
+𝑐
+)
+L
+^
+c
+	​
+
+=IsotonicFit(T
+c
+	​
+
+)
+🔑 Constraint:
+
+The fitted curve must be monotonically decreasing
+
+👉 Meaning:
+
+Loss should go down as training progresses
+
+Removes noise / fluctuations
+
+🎯 Why Isotonic Regression?
+
+Unlike linear or polynomial fits:
+
+✔ Makes no assumption about shape
+
+✔ Enforces monotonic decrease
+
+✔ Smooths noisy training signals
+
+So instead of:
+
+Raw loss:     0.8 → 0.6 → 0.7 → 0.5 → 0.6
+Isotonic fit: 0.8 → 0.7 → 0.7 → 0.6 → 0.6
+
+👉 We get a clean, realistic learning trend
+
+📊 Step 3 — Estimate Class Difficulty
+
+We take the final value of the fitted curve:
+
+𝐿
+^
+𝑐
+(
+∞
+)
+≈
+𝐿
+^
+𝑐
+(
+𝐸
+)
+L
+^
+c
+	​
+
+(∞)≈
+L
+^
+c
+(E)
+	​
+
+Interpretation:
+Value	Meaning
+Low	Easy class
+High	Hard class
+
+👉 This is your asymptotic loss estimate
+
+📊 Step 4 — Measure Instability
+
+We compute variance of the original trajectory:
+
+𝜎
+𝑐
+2
+=
+Var
+(
+𝑇
+𝑐
+)
+σ
+c
+2
+	​
+
+=Var(T
+c
+	​
+
+)
+Interpretation:
+Variance	Meaning
+Low	Stable learning
+High	Noisy / inconsistent class
+⚖️ Step 5 — Compute Final Weights
+
+We combine difficulty + instability:
+
+𝛼
+𝑐
+∝
+𝐿
+^
+𝑐
+(
+∞
+)
+⋅
+(
+1
++
+𝛽
+⋅
+𝜎
+𝑐
+2
+)
+α
+c
+	​
+
+∝
+L
+^
+c
+	​
+
+(∞)⋅(1+β⋅σ
+c
+2
+	​
+
+)
+
+Then normalize:
+
+∑
+𝑐
+𝛼
+𝑐
+=
+1
+c
+∑
+	​
+
+α
+c
+	​
+
+=1
+🧠 Intuition
+Component	Role
+
+𝐿
+^
+𝑐
+(
+∞
+)
+L
+^
+c
+	​
+
+(∞)	How hard the class is
+
+𝜎
+𝑐
+2
+σ
+c
+2
+	​
+
+	How unreliable learning is
+
+𝛽
+β	Controls instability importance
+🎯 What This Achieves
+✔ Hard classes get higher weight
+
+Model focuses on underperforming categories
+
+✔ Noisy classes are not ignored
+
+Instability boosts their importance
+
+✔ Easy classes are down-weighted
+
+Prevents domination
 ---
 
 ### 🔹 2. Severity-Aware Loss Scaling
