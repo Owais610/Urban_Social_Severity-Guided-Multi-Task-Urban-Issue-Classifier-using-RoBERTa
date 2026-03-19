@@ -122,7 +122,8 @@ L_proto = max(0, margin - ||P_high - P_low||)
 * Improves generalization
 
 ---
-
+![Loss Function](Images/Loss.jpg)
+---
 ## 📊 Dataset
 
 * ~37,000 posts
